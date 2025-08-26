@@ -1,4 +1,6 @@
-Friday or Saturday
+#######################################################
+Friday or Saturday (Formula)
+#######################################################
 In Dropdown Option are
 3 Weeks before
 2 Weeks before
@@ -57,6 +59,9 @@ Following next past Thursday (31-July-2025) = Count 4 -> drop2
 drop1=31-July-2025
 drop2=Current date
 
+#######################################################
+Friday or Saturday (Formula)
+#######################################################
 
 
 // OnChange of ddRangeSelector
@@ -72,23 +77,42 @@ With(
             // Calculate offset to nearest Thursday (past/future) from current date
             nearestThursday: If(
                 isBefore,
-                DateAdd(curDate, -Mod(Weekday(curDate, StartOfWeek.Sunday) - 5 + 7, 7), Days),
-                DateAdd(curDate, Mod(5 - Weekday(curDate, StartOfWeek.Sunday) + 7, 7), Days)
+                DateAdd(
+                    curDate,
+                    -Mod(Weekday(curDate, StartOfWeek.Sunday) - 5 + 7, 7),
+                    Days
+                ),
+                DateAdd(
+                    curDate,
+                    Mod(5 - Weekday(curDate, StartOfWeek.Sunday) + 7, 7),
+                    Days
+                )
             ),
             dropOffset: selNum + 1  // Offset count (as per your example logic)
         },
-        {
-            drop1: If(isBefore, DateAdd(nearestThursday, - (dropOffset - 1) * 7, Days), curDate),
-            drop2: If(isBefore, curDate, DateAdd(nearestThursday, (dropOffset - 1) * 7, Days))
-        }
+        // Set drop1 and drop2
+        Set(
+            drop1,
+            If(
+                isBefore,
+                DateAdd(nearestThursday, -(dropOffset - 1) * 7, Days),
+                curDate
+            )
+        );
+        Set(
+            drop2,
+            If(
+                isBefore,
+                curDate,
+                DateAdd(nearestThursday, (dropOffset - 1) * 7, Days)
+            )
+        )
     )
 )
 
-
-
-
-
-
+#######################################################
+Thursday
+#######################################################
 
 Thursday
 In Dropdown Option are
@@ -144,6 +168,9 @@ Following next past Thursday (31-July-2025) = Count 3 -> drop2
 drop1=31-July-2025
 drop2=Current date
 
+#######################################################
+Thursday (Formula)
+#######################################################
 
 // OnChange of ddRangeSelector
 With(
@@ -182,11 +209,9 @@ With(
     )
 )
 
-
-
-
-
+#######################################################
 Sun-Wed
+#######################################################
 In Dropdown Option are
 3 Weeks before
 2 Weeks before
@@ -245,26 +270,31 @@ Following next past Thursday (24-July-2025) = Count 4 -> drop2
 drop1=24-July-2025
 drop2=Current date
 
-
-
+#######################################################
+Sun-Wed (Formula)
+#######################################################
 
 // OnChange of ddRangeSelector
 With(
     {
-        curDate: Today(), // 30-Jul-2025
+        curDate: Today(), // e.g., 30-Jul-2025
         selNum: Value(First(Split(ddRangeSelector.Selected.Value, " ")).Result),
         isBefore: EndsWith(ddRangeSelector.Selected.Value, "before"),
-        weekDayNum: Weekday(Today(), StartOfWeek.Sunday), // Wednesday = 4
-        // Calculate the nearest Thursday
-        baseThursday: If(
-            isBefore,
-            // Find the most recent Thursday in the past
-            DateAdd(curDate, -Mod(weekDayNum + 2, 7), Days),
-            // Find the next Thursday in the future
-            DateAdd(curDate, Mod(5 - weekDayNum + 7, 7), Days)
-        )
+        weekDayNum: Weekday(Today(), StartOfWeek.Sunday) // e.g., Wednesday = 4
     },
-    // Set drop1 and drop2
-    Set(drop1, If(isBefore, DateAdd(baseThursday, -selNum * 7, Days), curDate));
-    Set(drop2, If(isBefore, curDate, DateAdd(baseThursday, selNum * 7, Days)))
+    With(
+        {
+            // Calculate the nearest Thursday
+            baseThursday: If(
+                isBefore,
+                // Find the most recent Thursday in the past
+                DateAdd(curDate, -Mod(weekDayNum + 2, 7), Days),
+                // Find the next Thursday in the future
+                DateAdd(curDate, Mod(5 - weekDayNum + 7, 7), Days)
+            )
+        },
+        // Set drop1 and drop2
+        Set(drop1, If(isBefore, DateAdd(baseThursday, -selNum * 7, Days), curDate));
+        Set(drop2, If(isBefore, curDate, DateAdd(baseThursday, selNum * 7, Days)))
+    )
 )
