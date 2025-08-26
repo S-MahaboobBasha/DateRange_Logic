@@ -1,0 +1,13 @@
+If(
+    StartDatePicker.SelectedDate > Last(
+        Filter(
+            Datasource,
+            EmailId = EmailId.Text
+        ).End
+    ).End,
+    SubmitForm(ProjectForm),
+    Notify(
+        "The date " & StartDatePicker.SelectedDate & " is overlapping with Previous Date",
+        Notification.Error
+    )
+)
