@@ -1,0 +1,12 @@
+Start >= End is INVALID. (A task cannot end before it starts).
+Start < End is VALID.
+
+Coalesce(
+    Parent.Error,
+    If(
+        !IsBlank(EndDatacardValue.SelectedDate) && 
+        (StartDataCardValue.SelectedDate >= EndDatacardValue.SelectedDate),
+        "Enter the Valid Date",
+        ""
+    )
+)
