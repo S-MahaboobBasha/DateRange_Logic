@@ -1,0 +1,270 @@
+Friday or Saturday
+In Dropdown Option are
+3 Weeks before
+2 Weeks before
+1 Week before
+3 Week after
+2 Week after
+1 Week after
+StartOfWeek.Sunday
+
+1 Week after - If current date is not Thursday that means current date will be Friday or Saturday, From current date till 2 Thursday in future
+For Example: Current Date 22-Aug-2025 (Friday)
+Next future Thursday (28-Aug-2025) = count 1
+Following next future Thursday (04-Sep-2025) = Count 2 -> drop2
+drop1=current date
+drop2=04-Sep-2025 
+
+2 Week after - If current date is not Thursday that means current date will be Friday or Saturday, From current date till 3 Thursday in future
+For Example: Current Date 22-Aug-2025 (Friday)
+Next future Thursday (28-Aug-2025) = count 1
+Following next future Thursday (04-Sep-2025) = Count 2 
+Following next future Thursday (11-Sep-2025) = Count 3 -> drop2
+drop1=current date
+drop2=11-Sep-2025
+
+
+3 Week after - If current date is not Thursday that means current date will be Friday or Saturday, From current date till 4 Thursday in future
+For Example: Current Date 22-Aug-2025 (Friday)
+Next future Thursday (28-Aug-2025) = count 1
+Following next future Thursday (04-Sep-2025) = Count 2 
+Following next future Thursday (11-Sep-2025) = Count 3 
+Following next future Thursday (18-Sep-2025) = Count 4 -> drop2
+drop1=current date
+drop2=18-Sep-2025
+
+1 Week before - If current date is not Thursday that means current date will be Friday or Saturday, From current date till 2 Thursday in past
+For Example: Current Date 22-Aug-2025 (Friday)
+Next Past Thursday (21-Aug-2025) = count 1
+Following next Past Thursday (14-Aug-2025) = Count 2 -> drop2
+drop1=14-Aug-2025
+drop2= Current date
+
+2 Week before - If current date is not Thursday that means current date will be Friday or Saturday, From current date till 3 Thursday in past
+For Example: Current Date 22-Aug-2025 (Friday)
+Next past Thursday (21-Aug-2025) = count 1
+Following next past Thursday (14-Aug-2025) = Count 2 
+Following next past Thursday (07-Aug-2025) = Count 3 -> drop2
+drop1= 07-Aug-2025
+drop2=current date
+
+3 Week before - If current date is not Thursday that means current date will be Friday or Saturday, From current date till 4 Thursday in past
+For Example: Current Date 22-Aug-2025 (Friday)
+Next past Thursday (21-Aug-2025) = count 1
+Following past next Thursday (14-Aug-2025) = Count 2 
+Following next past Thursday (07-Aug-2025) = Count 3 
+Following next past Thursday (31-July-2025) = Count 4 -> drop2
+drop1=31-July-2025
+drop2=Current date
+
+
+
+// OnChange of ddRangeSelector
+With(
+    {
+        curDate: Today(),
+        selNum: Value(First(Split(ddRangeSelector.Selected.Value, " ")).Result),
+        isBefore: EndsWith(ddRangeSelector.Selected.Value, "before"),
+        weekDayNum: Weekday(Today(), StartOfWeek.Sunday)
+    },
+    With(
+        {
+            // Calculate offset to nearest Thursday (past/future) from current date
+            nearestThursday: If(
+                isBefore,
+                DateAdd(curDate, -Mod(Weekday(curDate, StartOfWeek.Sunday) - 5 + 7, 7), Days),
+                DateAdd(curDate, Mod(5 - Weekday(curDate, StartOfWeek.Sunday) + 7, 7), Days)
+            ),
+            dropOffset: selNum + 1  // Offset count (as per your example logic)
+        },
+        {
+            drop1: If(isBefore, DateAdd(nearestThursday, - (dropOffset - 1) * 7, Days), curDate),
+            drop2: If(isBefore, curDate, DateAdd(nearestThursday, (dropOffset - 1) * 7, Days))
+        }
+    )
+)
+
+
+
+
+
+
+
+Thursday
+In Dropdown Option are
+3 Weeks before
+2 Weeks before
+1 Week before
+3 Week after
+2 Week after
+1 Week after
+StartOfWeek.Sunday
+
+1 Week after - If current date is Thursday, From current date till 1 Thursday in future
+For Example: Current Date 21-Aug-2025 (Thursday)
+Next future Thursday (28-Aug-2025) = count 1 -> drop2
+drop1=current date
+drop2=28-Aug-2025 
+
+2 Week after - If current date is Thursday, From current date till 2 Thursday in future
+For Example: Current Date 21-Aug-2025 (Thursday)
+Next future Thursday (28-Aug-2025) = count 1
+Following next future Thursday (04-Sep-2025) = Count 2 -> drop2
+drop1=current date
+drop2=04-Sep-2025
+
+
+3 Week after - If current date is Thursday, From current date till 3 Thursday in future
+For Example: Current Date 21-Aug-2025 (Thursday)
+Next future Thursday (28-Aug-2025) = count 1
+Following next future Thursday (04-Sep-2025) = Count 2 
+Following next future Thursday (11-Sep-2025) = Count 3 -> drop2
+drop1=current date
+drop2=11-Sep-2025
+
+1 Week before - If current date is Thursday, From current date till 1 Thursday in past
+For Example: Current Date 21-Aug-2025 (Thursday)
+Next Past Thursday (14-Aug-2025) = count 1-> drop2
+drop1=14-Aug-2025
+drop2= Current date
+
+2 Week before - If current date is Thursday, From current date till 2 Thursday in past
+For Example: Current Date 21-Aug-2025 (Thursday)
+Next past Thursday (14-Aug-2025) = count 1
+Following next past Thursday (07-Aug-2025) = Count 2 -> drop2
+drop1= 07-Aug-2025
+drop2=current date
+
+
+3 Week before - If current date is Thursday, From current date till 4 Thursday in past
+For Example: Current Date 21-Aug-2025 (Thursday)
+Next past Thursday (14-Aug-2025) = count 1
+Following past next Thursday (07-Aug-2025) = Count 2 
+Following next past Thursday (31-July-2025) = Count 3 -> drop2
+drop1=31-July-2025
+drop2=Current date
+
+
+// OnChange of ddRangeSelector
+With(
+    {
+        curDate: Today(),
+        selNum: Value(First(Split(ddRangeSelector.Selected.Value, " ")).Result),
+        isBefore: EndsWith(ddRangeSelector.Selected.Value, "before"),
+        weekDayNum: Weekday(Today(), StartOfWeek.Sunday) // 1=Sunday ... 7=Saturday
+    },
+    With(
+        {
+            // Calculate closest past/future Thursday
+            closestThursday: 
+                If(
+                    isBefore,
+                    DateAdd(curDate, -Mod(weekDayNum - 5 + 7, 7), Days), // past Thursday
+                    DateAdd(curDate, Mod(5 - weekDayNum + 7, 7), Days)   // future Thursday
+                ),
+            
+            // Calculate target Thursday based on number of weeks
+            targetThursday: 
+                If(
+                    isBefore,
+                    DateAdd(curDate, -Mod(weekDayNum - 5 + 7, 7) - 7*(selNum-1), Days), // weeks before
+                    DateAdd(curDate, Mod(5 - weekDayNum + 7, 7) + 7*(selNum-1), Days)   // weeks after
+                )
+        },
+        // Set drop1 and drop2 dynamically
+        If(
+            isBefore,
+            // For BEFORE, drop1 = targetThursday, drop2 = current date
+            { drop1: targetThursday, drop2: curDate },
+            // For AFTER, drop1 = current date, drop2 = targetThursday
+            { drop1: curDate, drop2: targetThursday }
+        )
+    )
+)
+
+
+
+
+
+Sun-Wed
+In Dropdown Option are
+3 Weeks before
+2 Weeks before
+1 Week before
+3 Week after
+2 Week after
+1 Week after
+StartOfWeek.Sunday
+
+1 Week after - If current date is not Thursday that means current date will be Sunday or Monday or Tuesday or Wednesday, From current date till 2 Thursday in future
+For Example: Current Date 18-Aug-2025 (Monday)
+Next future Thursday (21-Aug-2025) = count 1
+Following next future Thursday (28-Aug-2025) = Count 2 -> drop2
+drop1=current date
+drop2=28-Aug-2025 
+
+2 Week after - If current date is not Thursday that means current date will be Sunday or Monday or Tuesday or Wednesday, From current date till 3 Thursday in future
+For Example: Current Date 18-Aug-2025 (Monday)
+Next future Thursday (21-Aug-2025) = count 1
+Following next future Thursday (28-Aug-2025) = Count 2 
+Following next future Thursday (04-Sep-2025) = Count 3 -> drop2
+drop1=current date
+drop2=04-Sep-2025
+
+
+3 Week after - If current date is not Thursday that means current date will be Sunday or Monday or Tuesday or Wednesday, From current date till 4 Thursday in future
+For Example: Current Date 18-Aug-2025 (Monday)
+Next future Thursday (21-Aug-2025) = count 1
+Following next future Thursday (28-Aug-2025) = Count 2 
+Following next future Thursday (04-Sep-2025) = Count 3 
+Following next future Thursday (11-Sep-2025) = Count 4 -> drop2
+drop1=current date
+drop2=11-Sep-2025
+
+1 Week before - If current date is not Thursday that means current date will be Sunday or Monday or Tuesday or Wednesday, From current date till 2 Thursday in past
+For Example: Current Date 18-Aug-2025 (Monday)
+Next Past Thursday (14-Aug-2025) = count 1
+Following next Past Thursday (07-Aug-2025) = Count 2 -> drop2
+drop1=07-Aug-2025
+drop2= Current date
+
+2 Week before - If current date is not Thursday that means current date will be Sunday or Monday or Tuesday or Wednesday, From current date till 3 Thursday in past
+For Example: Current Date 18-Aug-2025 (Monday)
+Next past Thursday (14-Aug-2025) = count 1
+Following next past Thursday (07-Aug-2025) = Count 2 
+Following next past Thursday (31-July-2025) = Count 3 -> drop2
+drop1= 31-July-2025
+drop2=current date
+
+3 Week before - If current date is not Thursday that means current date will be Sunday or Monday or Tuesday or Wednesday, From current date till 4 Thursday in past
+For Example: Current Date 18-Aug-2025 (Monday)
+Next past Thursday (14-Aug-2025) = count 1
+Following past next Thursday (07-Aug-2025) = Count 2 
+Following next past Thursday (31-July-2025) = Count 3 
+Following next past Thursday (24-July-2025) = Count 4 -> drop2
+drop1=24-July-2025
+drop2=Current date
+
+
+
+
+// OnChange of ddRangeSelector
+With(
+    {
+        curDate: Today(), // 30-Jul-2025
+        selNum: Value(First(Split(ddRangeSelector.Selected.Value, " ")).Result),
+        isBefore: EndsWith(ddRangeSelector.Selected.Value, "before"),
+        weekDayNum: Weekday(Today(), StartOfWeek.Sunday), // Wednesday = 4
+        // Calculate the nearest Thursday
+        baseThursday: If(
+            isBefore,
+            // Find the most recent Thursday in the past
+            DateAdd(curDate, -Mod(weekDayNum + 2, 7), Days),
+            // Find the next Thursday in the future
+            DateAdd(curDate, Mod(5 - weekDayNum + 7, 7), Days)
+        )
+    },
+    // Set drop1 and drop2
+    Set(drop1, If(isBefore, DateAdd(baseThursday, -selNum * 7, Days), curDate));
+    Set(drop2, If(isBefore, curDate, DateAdd(baseThursday, selNum * 7, Days)))
+)
