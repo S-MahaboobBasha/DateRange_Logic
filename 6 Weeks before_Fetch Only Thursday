@@ -1,0 +1,115 @@
+###################### Prompt: 6 Weeks before
+
+Always StartOfWeek = Sunday
+
+I have one variable called varDefaultFromDate and moreover i want PowerApps Powerfx formula by satisfy all 3 condition
+
+Condition 1 - If current date is not Thursday that means current date will be Sunday or Monday or Tuesday or Wednesday, From current date till 7 Thursday in past
+For Example: Current Date 18-Aug-2025 (Monday)
+Next past Thursday (14-Aug-2025) = count 1
+Following past next Thursday (07-Aug-2025) = Count 2 
+Following next past Thursday (31-July-2025) = Count 3 
+Following next past Thursday (24-July-2025) = Count 4 
+Following past next Thursday (17-July-2025) = Count 5 
+Following next past Thursday (10-July-2025) = Count 6 
+Following next past Thursday (03-July-2025) = Count 7-> varDefaultFromDate
+
+varDefaultFromDate = 03-July-2025
+
+
+Condition 2 - If current date is Thursday, From current date till 6 Thursday in past
+For Example: Current Date 21-Aug-2025 (Thursday)
+Next past Thursday (14-Aug-2025) = count 1
+Following past next Thursday (07-Aug-2025) = Count 2 
+Following next past Thursday (31-July-2025) = Count 3 
+Following next past Thursday (24-July-2025) = Count 4 
+Following past next Thursday (17-July-2025) = Count 5 
+Following next past Thursday (10-July-2025) = Count 6 -> varDefaultFromDate
+
+varDefaultFromDate = 10-July-2025
+
+
+Condition 3 - If current date is not Thursday that means current date will be Friday or Saturday, From current date till 7 Thursday in past
+For Example: Current Date 22-Aug-2025 (Friday)
+Next past Thursday (21-Aug-2025) = count 1
+Following past next Thursday (14-Aug-2025) = Count 2 
+Following next past Thursday (07-Aug-2025) = Count 3 
+Following next past Thursday (31-July-2025) = Count 4 
+Following next past Thursday (24-July-2025) = Count 5 
+Following past next Thursday (17-July-2025) = Count 6 
+Following next past Thursday (10-July-2025) = Count 7 -> varDefaultFromDate
+
+varDefaultFromDate = 10-July-2025
+
+
+#############################################################################################
+6 Weeks before - Formula
+#############################################################################################
+
+---------------------------------------Readable Manner----------------------------------------
+
+// Set varDefaultFromDate based on current date and past Thursdays logic
+Set(
+    varDefaultFromDate,
+    With(
+        {
+            // Store today's date
+            currentDate: Today(),
+            
+            // Get numeric day of the week (Sunday=1, Monday=2, ..., Saturday=7)
+            dayOfWeek: Weekday(Today(), StartOfWeek.Sunday),
+            
+            // Determine how many Thursdays to go back:
+            // - If today is Thursday → 6 Thursdays back
+            // - Otherwise (Sun-Wed or Fri-Sat) → 7 Thursdays back
+            weeksToGoBack: If(dayOfWeek = 5, 6, 7)
+        },
+        DateAdd(
+            currentDate,
+            -(
+                // Days to reach the most recent Thursday
+                If(
+                    dayOfWeek = 5, 
+                    0,                               // Today is Thursday → 0 days
+                    If(dayOfWeek < 5, 
+                        dayOfWeek + 2,               // Sun-Wed → offset to past Thursday
+                        dayOfWeek - 5                // Fri-Sat → offset to past Thursday
+                    )
+                ) +
+                
+                // Full weeks back
+                (weeksToGoBack - 1) * 7           // Subtract full weeks to reach target Thursday
+            ),
+            Days
+        )
+    )
+)
+
+
+----------------------------Same formula Without Comment-----------------------------------------------------------------
+
+Set(
+    varDefaultFromDate,
+    With(
+        {
+            currentDate: Today(),
+            dayOfWeek: Weekday(Today(), StartOfWeek.Sunday),
+            weeksToGoBack: If(dayOfWeek = 5, 6, 7)
+        },
+        DateAdd(
+            currentDate,
+            -(
+                If(
+                    dayOfWeek = 5, 
+                    0,
+                    If(dayOfWeek < 5, dayOfWeek + 2, dayOfWeek - 5)
+                ) +
+                (weeksToGoBack - 1) * 7
+            ),
+            Days
+        )
+    )
+)
+
+
+
