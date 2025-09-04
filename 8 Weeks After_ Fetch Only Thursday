@@ -1,0 +1,109 @@
+########################### Prompt: 8 Weeks After
+
+
+Condition 1 - If current date is not Thursday that means current date will be Sunday or Monday or Tuesday or Wednesday, From current date till 9 Thursday in future
+For Example: Current Date 18-Aug-2025 (Monday)
+Next future Thursday (21-Aug-2025) = count 1
+Following next future Thursday (28-Aug-2025) = Count 2 
+Following next future Thursday (04-Sep-2025) = Count 3 
+Following next future Thursday (11-Sep-2025) = Count 4 
+Following next future Thursday (18-Sep-2025) = Count 5 
+Following next future Thursday (25-Sep-2025) = Count 6 
+Following next future Thursday (02-Oct-2025) = Count 7
+Following next future Thursday (09-Oct-2025) = Count 8 
+Following next future Thursday (16-Oct-2025) = Count 9 -> varDefaultToDate
+
+varDefaultToDate = 16-Oct-2025
+
+Condition 2 - If current date is Thursday, From current date till 8 Thursday in future
+For Example: Current Date 21-Aug-2025 (Thursday)
+Next future Thursday (28-Aug-2025) = count 1
+Following next future Thursday (04-Sep-2025) = Count 2 
+Following next future Thursday (11-Sep-2025) = Count 3  
+Following next future Thursday (18-Sep-2025) = Count 4 
+Following next future Thursday (25-Sep-2025) = Count 5 
+Following next future Thursday (02-Oct-2025) = Count 6
+Following next future Thursday (09-Oct-2025) = Count 7 
+Following next future Thursday (16-Oct-2025) = Count 8 -> varDefaultToDate
+
+varDefaultToDate = 16-Oct-2025
+
+Condition 3 - If current date is not Thursday that means current date will be Friday or Saturday, From current date till 4 Thursday in future
+For Example: Current Date 22-Aug-2025 (Friday)
+Next future Thursday (28-Aug-2025) = count 1
+Following next future Thursday (04-Sep-2025) = Count 2 
+Following next future Thursday (11-Sep-2025) = Count 3  
+Following next future Thursday (18-Sep-2025) = Count 4 
+Following next future Thursday (25-Sep-2025) = Count 5 
+Following next future Thursday (02-Oct-2025) = Count 6
+Following next future Thursday (09-Oct-2025) = Count 7 
+Following next future Thursday (16-Oct-2025) = Count 8
+Following next future Thursday (23-Oct-2025) = Count 9 -> varDefaultToDate
+
+varDefaultToDate = 23-Oct-2025
+
+
+#################################################################################
+8 Weeks After Formula
+#################################################################################
+
+
+------------------------------------Hard-Coded Way-----------------------------------------------------
+With(
+    {
+        currentDate: Today(),
+        dayOfWeek: Weekday(currentDate, StartOfWeek.Sunday)
+    },
+    DateAdd(
+        currentDate,
+        If(
+            dayOfWeek <= 4, // Sunday-Wednesday: 9 Thursdays
+            (4 - dayOfWeek) + 56, // Days to 1st Thursday + 8 weeks
+            dayOfWeek = 5, // Thursday: 8 Thursdays
+            56, // 8 weeks exactly
+            // Friday-Saturday: 9 Thursdays
+            (11 - dayOfWeek) + 56 // Days to 1st Thursday + 8 weeks
+        ),
+        Days
+    )
+)
+
+
+------------------------------------Dynamic Way-----------------------------------------------------
+
+With(
+    {
+        currentDate: Today(),
+        dayOfWeek: Weekday(currentDate, StartOfWeek.Sunday),
+        targetWeekday: 5, // Thursday (Sunday=1, Monday=2, ..., Saturday=7)
+        weeksToAdd: 8
+    },
+    DateAdd(
+        currentDate,
+        If(
+            dayOfWeek <= targetWeekday,
+            (targetWeekday - dayOfWeek) + (weeksToAdd * 7),
+            (7 - dayOfWeek + targetWeekday) + (weeksToAdd * 7)
+        ),
+        Days
+    )
+)
+
+
+
+--------------------------------Optional Don't use-------------------------------------------------------------------
+Set(
+    varDefaultToDate,
+    DateAdd(
+        Today(),
+        // Days until next Thursday
+        Mod(7 - (Weekday(Today(), StartOfWeek.Thursday) - 1), 7) +
+        // Add 8 or 9 weeks depending on whether today is Thursday
+        (If(Weekday(Today()) = 5, 8, 9) - 1) * 7,
+        Days
+    )
+)
+
+
+
+
