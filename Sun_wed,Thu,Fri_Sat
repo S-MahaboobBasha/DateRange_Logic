@@ -162,7 +162,7 @@ drop1= 07-Aug-2025
 drop2=current date
 
 
-3 Week before - If current date is Thursday, From current date till 4 Thursday in past
+3 Week before - If current date is Thursday, From current date till 3 Thursday in past
 For Example: Current Date 21-Aug-2025 (Thursday)
 Next past Thursday (14-Aug-2025) = count 1
 Following past next Thursday (07-Aug-2025) = Count 2 
