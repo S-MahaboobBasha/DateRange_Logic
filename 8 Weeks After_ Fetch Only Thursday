@@ -28,7 +28,7 @@ Following next future Thursday (16-Oct-2025) = Count 8 -> varDefaultToDate
 
 varDefaultToDate = 16-Oct-2025
 
-Condition 3 - If current date is not Thursday that means current date will be Friday or Saturday, From current date till 4 Thursday in future
+Condition 3 - If current date is not Thursday that means current date will be Friday or Saturday, From current date till 9 Thursday in future
 For Example: Current Date 22-Aug-2025 (Friday)
 Next future Thursday (28-Aug-2025) = count 1
 Following next future Thursday (04-Sep-2025) = Count 2 
